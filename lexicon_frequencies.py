@@ -3,7 +3,7 @@ import time
 import re
 import pandas as pd
 from nltk import tokenize
-
+import numpy as np
 
 EAP_start = 1827
 EAP_end = 1849
@@ -21,6 +21,9 @@ ngram_data_regex = re.compile(r'imeseries\": \[(\d|\.|\s|,|e|-)*\]')
 
 def get_ngram_frequency_from_request(request, regex):
     results = []
+    if not regex.search(request.text):
+        print(request.text)
+        return None
     frequencies = regex.search(request.text).group()
     frequencies = frequencies[13:-1]
     frequencies = frequencies.split(", ")
@@ -31,18 +34,24 @@ def get_ngram_frequency_from_request(request, regex):
     return results
 
 def get_lexicon_frequencies(lexicon):
+    filename = 'train.csv'
     lexicon_frequencies = []
     error_counter = 0
-    sleep_time = 1
+    sleep_time = 2
     BASEURL = "https://books.google.com/ngrams/graph?content={}&year_start=1818&year_end=1943&corpus=16&smoothing=0"
     for n, word in enumerate(lexicon):
-        if n%1378 == 1:
-            print("{}% done!".format(round(len(lexicon)/n), 2))
+        print(n)
+        if n%1378 == 0:
+            print("{}% done!".format(round(n/len(lexicon)*100), 2))
+        if n%75 == 74:
+            time.sleep(120)
         if error_counter > 8:
             print("too many errors. Sleep time = {}".format(sleep_time))
             break
         request = requests.get(BASEURL.format(word))
         if request.status_code != 200:
+            if re.search(r'No valid ngrams to plot!', request.text):
+                pass
             error_counter += 1
             time.sleep(sleep_time)
             request = requests.get(BASEURL.format(word))
@@ -53,12 +62,13 @@ def get_lexicon_frequencies(lexicon):
                 time.sleep(300)
                 sleep_time *= 2
         ngram_frequencies = get_ngram_frequency_from_request(request, ngram_data_regex)
-        lexicon_frequencies.append((word, ngram_frequencies))
+        if ngram_frequencies:
+            lexicon_frequencies.append((word, ngram_frequencies))
         time.sleep(sleep_time)
     return lexicon_frequencies
 
 def main():
-	df = pd.read_csv(filename, index_col='id')
+	df = pd.read_csv('train.csv', index_col='id')
 	token_list = []
 	stopWords = set(stopwords.words('english'))
 	for sentence in df.text:
@@ -68,7 +78,8 @@ def main():
 	lexicon = set()
 	for sentence in token_list:
 		lexicon.update(sentence)
-	lexicon_frequencies = get_lexicon_frequencies(lexicon)
+	this = [word for word in lexicon][:100]
+	lexicon_frequencies = get_lexicon_frequencies(this)
 	pd.DataFrame(lexicon_frequencies).to_csv('lexicon_frequencies.csv')
 
 
