@@ -37,21 +37,21 @@ def get_lexicon_frequencies(lexicon):
     filename = 'train.csv'
     lexicon_frequencies = []
     error_counter = 0
-    sleep_time = 2
+    sleep_time = 0.1
     BASEURL = "https://books.google.com/ngrams/graph?content={}&year_start=1818&year_end=1943&corpus=16&smoothing=0"
     for n, word in enumerate(lexicon):
         print(n)
         if n%1378 == 0:
             print("{}% done!".format(round(n/len(lexicon)*100), 2))
         if n%75 == 74:
-            time.sleep(120)
+            time.sleep(300)
         if error_counter > 8:
             print("too many errors. Sleep time = {}".format(sleep_time))
             break
         request = requests.get(BASEURL.format(word))
+        if re.search(r'No valid ngrams to plot!', request.text):
+            pass
         if request.status_code != 200:
-            if re.search(r'No valid ngrams to plot!', request.text):
-                pass
             error_counter += 1
             time.sleep(sleep_time)
             request = requests.get(BASEURL.format(word))
@@ -60,7 +60,6 @@ def get_lexicon_frequencies(lexicon):
                 print("two consecutive errors")
                 print(request.status_code, request.text)
                 time.sleep(300)
-                sleep_time *= 2
         ngram_frequencies = get_ngram_frequency_from_request(request, ngram_data_regex)
         if ngram_frequencies:
             lexicon_frequencies.append((word, ngram_frequencies))
@@ -78,7 +77,7 @@ def main():
 	lexicon = set()
 	for sentence in token_list:
 		lexicon.update(sentence)
-	this = [word for word in lexicon][:100]
+	this = [word for word in lexicon][:80]
 	lexicon_frequencies = get_lexicon_frequencies(this)
 	pd.DataFrame(lexicon_frequencies).to_csv('lexicon_frequencies.csv')
 
