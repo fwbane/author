@@ -4,6 +4,7 @@ import re
 import pandas as pd
 from nltk import tokenize
 import numpy as np
+from collections import Counter
 
 EAP_start = 1827
 EAP_end = 1849
@@ -74,11 +75,14 @@ def main():
 		tokens = tokenize.word_tokenize(sentence)
 		tokens = [t for t in tokens if len(t)>1 and t not in stopWords]
 		token_list.append(tokens)
-	lexicon = set()
+	wordcounts = Counter()
 	for sentence in token_list:
-		lexicon.update(sentence)
-	this = [word for word in lexicon][:80]
-	lexicon_frequencies = get_lexicon_frequencies(this)
+		wordcounts.update([t.lower() for t in sentence])
+	wordlist = []
+	for word, count in wordcounts.items():
+		if 5 < count < 200:
+			wordlist.append(word)
+	lexicon_frequencies = get_lexicon_frequencies(wordlist)
 	pd.DataFrame(lexicon_frequencies).to_csv('lexicon_frequencies.csv')
 
 
