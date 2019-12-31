@@ -45,10 +45,7 @@ def get_lexicon_frequencies(lexicon):
         if n%1378 == 0:
             print("{}% done!".format(round(n/len(lexicon)*100), 2))
         if n%75 == 74:
-            time.sleep(300)
-        if error_counter > 8:
-            print("too many errors. Sleep time = {}".format(sleep_time))
-            break
+            time.sleep(360)
         request = requests.get(BASEURL.format(word))
         if re.search(r'No valid ngrams to plot!', request.text):
             pass
@@ -60,7 +57,7 @@ def get_lexicon_frequencies(lexicon):
                 error_counter += 1
                 print("two consecutive errors")
                 print(request.status_code, request.text)
-                time.sleep(300)
+                time.sleep(120)
         ngram_frequencies = get_ngram_frequency_from_request(request, ngram_data_regex)
         if ngram_frequencies:
             lexicon_frequencies.append((word, ngram_frequencies))
