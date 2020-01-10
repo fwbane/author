@@ -115,7 +115,7 @@ if __name__ == "__main__":
     if load:
         model = cnn.load()
     else:
-        print("hi")
+        print("hi\t{}".format(time.time()))
         df = cnn.preprocess()
         num_classes = len(list(df.author.unique()))
         print(df.shape)
@@ -130,6 +130,7 @@ if __name__ == "__main__":
         Y_dev = np.array(Y_dev)
         print(X_train.shape, Y_train.shape, X_dev.shape, Y_dev.shape)
         print("ttfn bitchezzz")
+        print(time.time())
         # model = cnn.create()
         # model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
         # model.fit(X_train, Y_train, batch_size=batch_size, epochs=epochs, validation_data=(X_dev, Y_dev))
