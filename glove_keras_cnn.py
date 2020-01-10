@@ -19,6 +19,7 @@ class glove_keras_cnn(Model):
         authors = list(df.author.unique())
         lookup = {a: _ for _, a in enumerate(authors)}
         df['y'] = [lookup[i] for i in df.author]
+        return df
 
     def vectorize(self, dataset):
         print("vectorizing")
@@ -115,7 +116,6 @@ if __name__ == "__main__":
         model = cnn.load()
     else:
         print("hi")
-
         df = cnn.preprocess()
         num_classes = len(list(df.author.unique()))
         print(df.shape)
