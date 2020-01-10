@@ -62,7 +62,9 @@ class glove_keras_cnn(Model):
 
 
     def train(self):
-        pass
+        model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
+        model.fit(X_train, Y_train, batch_size=batch_size, epochs=epochs, validation_data=(X_dev, Y_dev))
+        return model
 
     def save(self, model, save_weights=False):
         model_structure = model.to_json()
@@ -131,10 +133,9 @@ if __name__ == "__main__":
         print(X_train.shape, Y_train.shape, X_dev.shape, Y_dev.shape)
         print("ttfn bitchezzz")
         print(time.time())
-        # model = cnn.create()
-        # model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
-        # model.fit(X_train, Y_train, batch_size=batch_size, epochs=epochs, validation_data=(X_dev, Y_dev))
-        # cnn.save(model, save_weights=True)
+        model = cnn.create()
+        model = cnn.train(model)
+        cnn.save(model, save_weights=True)
 
 
 
