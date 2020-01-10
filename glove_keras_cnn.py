@@ -18,7 +18,13 @@ class glove_keras_cnn(Model):
         df = Model.preprocess(self)
         authors = list(df.author.unique())
         lookup = {a: _ for _, a in enumerate(authors)}
-        df['y'] = [lookup[i] for i in df.author]
+        y_numbers = [lookup[i] for i in df.author]
+        y_vecs = []
+        for y in y_numbers:
+            base_vec = np.zeros(3, dtype='int')
+            base_vec[y] = 1
+            y_vecs.append(base_vec)
+        df['y'] = y_vecs
         return df
 
     def vectorize(self, dataset):
@@ -125,7 +131,7 @@ if __name__ == "__main__":
         X, y = df['text'], df['y']
         X = cnn.vectorize(X)
         X_train, X_dev, Y_train, Y_dev = train_test_split(X, y, test_size=0.2, random_state=707)
-        print("padding data", time.time() - )
+        print("padding data", time.time() - t)
         X_train = pad_trunc(X_train, maxlen)
         X_dev = pad_trunc(X_dev, maxlen)
         X_train = np.reshape(X_train, (len(X_train), maxlen, embedding_dims))
@@ -133,7 +139,7 @@ if __name__ == "__main__":
         X_dev = np.reshape(X_dev, (len(X_dev), maxlen, embedding_dims))
         Y_dev = np.array(Y_dev)
         print(X_train.shape, Y_train.shape, X_dev.shape, Y_dev.shape)
-        print("creating model", time.time()-t)
+        print("creating model", time.time()- t)
         model = cnn.create()
         print("training model", time.time() - t)
         model = cnn.train(model)
