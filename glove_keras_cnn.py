@@ -61,7 +61,7 @@ class glove_keras_cnn(Model):
 
 
 
-    def train(self):
+    def train(self, model):
         model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
         model.fit(X_train, Y_train, batch_size=batch_size, epochs=epochs, validation_data=(X_dev, Y_dev))
         return model
@@ -117,13 +117,15 @@ if __name__ == "__main__":
     if load:
         model = cnn.load()
     else:
-        print("hi\t{}".format(time.time()))
+        t = time.time()
+        print("hi\t{}".format(t))
         df = cnn.preprocess()
         num_classes = len(list(df.author.unique()))
         print(df.shape)
         X, y = df['text'], df['y']
         X = cnn.vectorize(X)
         X_train, X_dev, Y_train, Y_dev = train_test_split(X, y, test_size=0.2, random_state=707)
+        print("padding data", time.time() - )
         X_train = pad_trunc(X_train, maxlen)
         X_dev = pad_trunc(X_dev, maxlen)
         X_train = np.reshape(X_train, (len(X_train), maxlen, embedding_dims))
@@ -131,9 +133,9 @@ if __name__ == "__main__":
         X_dev = np.reshape(X_dev, (len(X_dev), maxlen, embedding_dims))
         Y_dev = np.array(Y_dev)
         print(X_train.shape, Y_train.shape, X_dev.shape, Y_dev.shape)
-        print("ttfn bitchezzz")
-        print(time.time())
+        print("creating model", time.time()-t)
         model = cnn.create()
+        print("training model", time.time() - t)
         model = cnn.train(model)
         cnn.save(model, save_weights=True)
 
