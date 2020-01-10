@@ -31,7 +31,7 @@ class glove_keras_cnn(Model):
         print("vectorizing")
         t = time.time()
         GLOVE_DIR = "/media/D/data/glove/"
-        GLOVE_W2V_FILE = "glove.6B.300d.w2vformat.txt"
+        GLOVE_W2V_FILE = "glove.840B.300d.w2vformat.txt"
         GLOVE_W2V_PATH = os.path.join(GLOVE_DIR, GLOVE_W2V_FILE)
         glove_model = gensim.models.KeyedVectors.load_word2vec_format(GLOVE_W2V_PATH)
         print("time taken loading glove: {}".format(time.time()-t))
@@ -117,7 +117,7 @@ if __name__ == "__main__":
     filters = 250
     kernel_size = 3
     hidden_dims = 250
-    epochs = 2
+    epochs = 4
 
     cnn = glove_keras_cnn()
     if load:
@@ -131,7 +131,7 @@ if __name__ == "__main__":
         X = df['text']
         y = np.ndarray([len(df['y']), 3])
         for _, vec in enumerate(df['y']):
-            y[_] = vec[0]
+            y[_] = vec
         X = cnn.vectorize(X)
         X_train, X_dev, Y_train, Y_dev = train_test_split(X, y, test_size=0.2, random_state=707)
         print("padding data", time.time() - t)
