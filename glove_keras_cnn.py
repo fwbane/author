@@ -13,7 +13,7 @@ import pickle
 
 from model_template import Model
 
-load = False  # Eventually parse as command line argument
+load = True  # Eventually parse as command line argument
 maxlen = 100
 batch_size = 32
 embedding_dims = 300
@@ -39,7 +39,6 @@ class glove_keras_cnn(Model):
 
     def vectorize(self, dataset):
         print("vectorizing")
-        t = time.time()
         GLOVE_DIR = "/media/D/data/glove/"
         GLOVE_W2V_FILE = "glove.840B.300d.w2vformat.txt"
         GLOVE_W2V_PATH = os.path.join(GLOVE_DIR, GLOVE_W2V_FILE)
@@ -115,8 +114,7 @@ def pad_trunc(data, maxlen):
     return new_data
 
 def main():
-
-
+    t = time.time()
     cnn = glove_keras_cnn()
     if load:
         X = pickle.load(open("X-glove-encoding", "rb"))
