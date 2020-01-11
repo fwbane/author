@@ -150,7 +150,7 @@ def main():
         print("creating model", time.time() - t)
         model = cnn.create()
         print("training model", time.time() - t)
-        model = cnn.train(model)
+        model = cnn.train(model, X_train, Y_train, X_dev, Y_dev)
         cnn.save(model, save_weights=True)
 
 
