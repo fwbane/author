@@ -5,16 +5,16 @@ class Model:
         df = pd.read_csv(filename, index_col='id')
         return df
 
-    def vectorize(self):
+    def vectorize(self, dataset):
         pass
 
     def create(self):
         pass
 
-    def train(self):
+    def train(self, model, X_train, Y_train, X_dev, Y_dev):
         pass
 
-    def save(self):
+    def save(self, model, save_weights=False):
         pass
 
     def load(self):

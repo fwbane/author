@@ -9,19 +9,30 @@ from keras.layers import Dense, Activation, Conv1D, Dropout, GlobalMaxPooling1D
 from keras.optimizers import SGD
 import gensim
 from keras.models import model_from_json
-
+import pickle
 
 from model_template import Model
+
+load = False  # Eventually parse as command line argument
+maxlen = 100
+batch_size = 32
+embedding_dims = 300
+filters = 250
+kernel_size = 3
+hidden_dims = 250
+epochs = 4
+num_classes = 3
 
 class glove_keras_cnn(Model):
     def preprocess(self):
         df = Model.preprocess(self)
         authors = list(df.author.unique())
+        num_classes = len(authors)
         lookup = {a: _ for _, a in enumerate(authors)}
         y_numbers = [lookup[i] for i in df.author]
         y_vecs = []
         for y in y_numbers:
-            base_vec = np.zeros(3, dtype='int')
+            base_vec = np.zeros(num_classes, dtype='int')
             base_vec[y] = 1
             y_vecs.append(base_vec)
         df['y'] = y_vecs
@@ -60,14 +71,9 @@ class glove_keras_cnn(Model):
         model.add(Activation('relu'))
         model.add(Dense(num_classes))
         model.add(Activation('sigmoid'))
-
         return model
 
-
-
-
-
-    def train(self, model):
+    def train(self, model, X_train, Y_train, X_dev, Y_dev):
         model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
         model.fit(X_train, Y_train, batch_size=batch_size, epochs=epochs, validation_data=(X_dev, Y_dev))
         return model
@@ -109,39 +115,39 @@ def pad_trunc(data, maxlen):
         new_data.append(temp)
     return new_data
 
-if __name__ == "__main__":
-    load = False # Eventually parse as command line argument
-    maxlen = 100
-    batch_size = 32
-    embedding_dims = 300
-    filters = 250
-    kernel_size = 3
-    hidden_dims = 250
-    epochs = 4
+def main():
+
 
     cnn = glove_keras_cnn()
     if load:
-        model = cnn.load()
+        X = pickle.load(open("X-glove-encoding", "rb"))
+        y = pickle.load(open("y-glove-encoding", "rb"))
     else:
         t = time.time()
         print("hi\t{}".format(t))
         df = cnn.preprocess()
-        num_classes = len(list(df.author.unique()))
         print(df.shape)
         X = df['text']
-        y = np.ndarray([len(df['y']), 3])
+        y = np.ndarray([len(df['y']), num_classes])
         for _, vec in enumerate(df['y']):
             y[_] = vec
         X = cnn.vectorize(X)
-        X_train, X_dev, Y_train, Y_dev = train_test_split(X, y, test_size=0.2, random_state=707)
-        print("padding data", time.time() - t)
-        X_train = pad_trunc(X_train, maxlen)
-        X_dev = pad_trunc(X_dev, maxlen)
-        X_train = np.reshape(X_train, (len(X_train), maxlen, embedding_dims))
-        Y_train = np.reshape(Y_train, (len(Y_train), num_classes))
-        X_dev = np.reshape(X_dev, (len(X_dev), maxlen, embedding_dims))
-        Y_dev = np.reshape(Y_dev, (len(Y_dev), num_classes))
-        print(X_train.shape, Y_train.shape, X_dev.shape, Y_dev.shape)
+        pickle.dump(X, open("X-glove-encoding", "wb"))
+        pickle.dump(y, open("y-glove-encoding", "wb"))
+
+    X_train, X_dev, Y_train, Y_dev = train_test_split(X, y, test_size=0.2, random_state=707)
+    print("padding data", time.time() - t)
+    X_train = pad_trunc(X_train, maxlen)
+    X_dev = pad_trunc(X_dev, maxlen)
+    X_train = np.reshape(X_train, (len(X_train), maxlen, embedding_dims))
+    Y_train = np.reshape(Y_train, (len(Y_train), num_classes))
+    X_dev = np.reshape(X_dev, (len(X_dev), maxlen, embedding_dims))
+    Y_dev = np.reshape(Y_dev, (len(Y_dev), num_classes))
+    print(X_train.shape, Y_train.shape, X_dev.shape, Y_dev.shape)
+
+    if load:
+        model = cnn.load()
+    else:
         print("creating model", time.time()- t)
         model = cnn.create()
         print("training model", time.time() - t)
@@ -149,7 +155,8 @@ if __name__ == "__main__":
         cnn.save(model, save_weights=True)
 
 
-
+if __name__ == "__main__":
+    main()
 
 
 
