@@ -69,6 +69,7 @@ class glove_keras_cnn(Model):
         model.add(Activation('relu'))
         model.add(Dense(num_classes))
         model.add(Activation('sigmoid'))
+        self.model = model
         return model
 
     def train(self, model, X_train, Y_train, X_dev, Y_dev):
@@ -88,10 +89,17 @@ class glove_keras_cnn(Model):
             json_string = json_file.read()
         model = model_from_json(json_string)
         model.load_weights('cnn_weights.h5')
+        self.model = model
         return model
 
     def predict(self, query):
-        pass
+        if not self.model:
+            print("No model available for prediction")
+        query = list(query)
+        query = self.vectorize(query)
+        query = pad_trunc(query, maxlen)
+        query_vec = np.reshape(query[0], (len(query[0]), maxlen, embedding_dims))
+        print(self.model.predict(query_vec))
 
 def pad_trunc(data, maxlen):
     new_data = []
@@ -150,7 +158,11 @@ def main():
         print("training model", time.time() - t)
         model = cnn.train(model, X_train, Y_train, X_dev, Y_dev)
         cnn.save(model, save_weights=True)
-
+    test_string = """Once upon a midnight dreary, while I pondered, weak and weary, 
+    Over many a quaint and curious volume of forgotten lore, 
+    While I nodded, nearly napping, suddenly there came a tapping, 
+    As of some one gently rapping, rapping at my chamber door.""".replace("\n", "")
+    cnn.predict(test_string)
 
 if __name__ == "__main__":
     main()
