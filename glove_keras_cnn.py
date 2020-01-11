@@ -43,7 +43,7 @@ class glove_keras_cnn(Model):
         GLOVE_W2V_FILE = "glove.840B.300d.w2vformat.txt"
         GLOVE_W2V_PATH = os.path.join(GLOVE_DIR, GLOVE_W2V_FILE)
         glove_model = gensim.models.KeyedVectors.load_word2vec_format(GLOVE_W2V_PATH)
-        print("time taken loading glove: {}".format(time.time()-t))
+        # print("time taken loading glove: {}".format(time.time()-t))
         wv = glove_model.wv
         tokenizer = TreebankWordTokenizer()
         vectorized_data = []
