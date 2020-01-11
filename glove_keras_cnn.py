@@ -27,7 +27,6 @@ class glove_keras_cnn(Model):
     def preprocess(self):
         df = Model.preprocess(self)
         authors = list(df.author.unique())
-        num_classes = len(authors)
         lookup = {a: _ for _, a in enumerate(authors)}
         y_numbers = [lookup[i] for i in df.author]
         y_vecs = []
@@ -148,7 +147,7 @@ def main():
     if load:
         model = cnn.load()
     else:
-        print("creating model", time.time()- t)
+        print("creating model", time.time() - t)
         model = cnn.create()
         print("training model", time.time() - t)
         model = cnn.train(model)
