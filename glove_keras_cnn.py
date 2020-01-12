@@ -93,9 +93,10 @@ class glove_keras_cnn(Model):
         return model
 
     def predict(self, query):
+        # This is currently not working, problem reshaping the query vector.
         if not self.model:
             print("No model available for prediction")
-        query = list(query)
+        query = [query]
         query = self.vectorize(query)
         query = pad_trunc(query, maxlen)
         query_vec = np.reshape(query[0], (len(query[0]), maxlen, embedding_dims))
@@ -162,7 +163,7 @@ def main():
     Over many a quaint and curious volume of forgotten lore, 
     While I nodded, nearly napping, suddenly there came a tapping, 
     As of some one gently rapping, rapping at my chamber door.""".replace("\n", "")
-    cnn.predict(test_string)
+    # cnn.predict(test_string)
 
 if __name__ == "__main__":
     main()
