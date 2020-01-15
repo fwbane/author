@@ -13,7 +13,7 @@ import pickle
 
 from model_template import Model
 
-load = True  # Eventually parse as command line argument
+load = False  # Eventually parse as command line argument
 maxlen = 100
 batch_size = 32
 embedding_dims = 300
@@ -129,7 +129,7 @@ class GloveKerasCnn(Model):
             print(np.argmax(predictions[n]))
             print("")
 
-    def pad_trunc(data, maxlen):
+    def pad_trunc(self, data, maxlen):
         new_data = []
         # Create a vector of 0s the length of our word vectors
         zero_vector = []
