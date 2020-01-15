@@ -1,5 +1,13 @@
 import pandas as pd
+
+MODEL_DIR = "/media/D/data/models/"
+
 class Model:
+    def __init__(self):
+        self.embedding = None
+        self.model = None
+        self.dir = MODEL_DIR
+
     def preprocess(self):
         filename = 'train.csv'
         df = pd.read_csv(filename, index_col='id')
@@ -22,3 +30,6 @@ class Model:
 
     def predict(self, query):
         pass
+
+    def phi(self):
+        print("Hi")
