@@ -13,7 +13,7 @@ import pickle
 
 from model_template import Model
 
-load = True  # Eventually parse as command line argument
+load = False  # Eventually parse as command line argument
 maxlen = 100
 batch_size = 32
 embedding_dims = 300
@@ -46,7 +46,7 @@ class GloveKerasCnn(Model):
             glove_model = gensim.models.KeyedVectors.load_word2vec_format(GLOVE_W2V_PATH)
             # print("time taken loading glove: {}".format(time.time()-t))
             self.wv = glove_model.wv
-            wv = self.wv
+        wv = self.wv
         tokenizer = TreebankWordTokenizer()
         vectorized_data = []
         for sentence in dataset:
