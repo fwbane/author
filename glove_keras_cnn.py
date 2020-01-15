@@ -23,7 +23,7 @@ hidden_dims = 250
 epochs = 4
 num_classes = 3
 
-class glove_keras_cnn(Model):
+class GloveKerasCnn(Model):
     def preprocess(self):
         df = Model.preprocess(self)
         authors = list(df.author.unique())
@@ -39,12 +39,14 @@ class glove_keras_cnn(Model):
 
     def vectorize(self, dataset):
         print("vectorizing")
-        GLOVE_DIR = "/media/D/data/glove/"
-        GLOVE_W2V_FILE = "glove.840B.300d.w2vformat.txt"
-        GLOVE_W2V_PATH = os.path.join(GLOVE_DIR, GLOVE_W2V_FILE)
-        glove_model = gensim.models.KeyedVectors.load_word2vec_format(GLOVE_W2V_PATH)
-        # print("time taken loading glove: {}".format(time.time()-t))
-        wv = glove_model.wv
+        if not self.wv:
+            GLOVE_DIR = "/media/D/data/glove/"
+            GLOVE_W2V_FILE = "glove.840B.300d.w2vformat.txt"
+            GLOVE_W2V_PATH = os.path.join(GLOVE_DIR, GLOVE_W2V_FILE)
+            glove_model = gensim.models.KeyedVectors.load_word2vec_format(GLOVE_W2V_PATH)
+            # print("time taken loading glove: {}".format(time.time()-t))
+            self.wv = glove_model.wv
+            wv = self.wv
         tokenizer = TreebankWordTokenizer()
         vectorized_data = []
         for sentence in dataset:
@@ -92,15 +94,26 @@ class glove_keras_cnn(Model):
         self.model = model
         return model
 
-    def predict(self, query):
+    def predict(self, query, vectorize=True):
         # This is currently not working, problem reshaping the query vector.
         if not self.model:
             print("No model available for prediction")
-        query = [query]
-        query = self.vectorize(query)
-        query = pad_trunc(query, maxlen)
-        query_vec = np.reshape(query[0], (len(query[0]), maxlen, embedding_dims))
-        print(self.model.predict(query_vec))
+        if vectorize:
+            if isinstance(query, str):
+                query = [query]
+            vectorized_query = self.vectorize(query)
+            pickle.dump(vectorized_query, open("glove_vectorized_test_sentences", "wb"))
+        else:
+            vectorized_query = query
+        vectorized_query = pad_trunc(vectorized_query, maxlen)
+        vectorized_query = np.asarray(vectorized_query)
+        vectorized_query = np.reshape(vectorized_query, (len(query), maxlen, embedding_dims)) # Should be redundant, to ensure compliance
+        predictions = self.model.predict(vectorized_query)
+        for n, sentence in enumerate(query):
+            print(sentence)
+            print(predictions[n])
+            print(np.argmax(predictions[n]))
+            print("")
 
 def pad_trunc(data, maxlen):
     new_data = []
@@ -124,7 +137,7 @@ def pad_trunc(data, maxlen):
 
 def main():
     t = time.time()
-    cnn = glove_keras_cnn()
+    cnn = GloveKerasCnn()
     if load:
         X = pickle.load(open("X-glove-encoding", "rb"))
         y = pickle.load(open("y-glove-encoding", "rb"))
@@ -159,11 +172,26 @@ def main():
         print("training model", time.time() - t)
         model = cnn.train(model, X_train, Y_train, X_dev, Y_dev)
         cnn.save(model, save_weights=True)
-    test_string = """Once upon a midnight dreary, while I pondered, weak and weary, 
-    Over many a quaint and curious volume of forgotten lore, 
-    While I nodded, nearly napping, suddenly there came a tapping, 
-    As of some one gently rapping, rapping at my chamber door.""".replace("\n", "")
-    # cnn.predict(test_string)
+
+    if load:
+        vectorized_query = pickle.load(open("glove_vectorized_test_sentences", "rb"))
+        cnn.predict(vectorized_query, vectorize=False)
+    else:
+        EAP_test_string = """Once upon a midnight dreary, while I pondered, weak and weary, 
+        Over many a quaint and curious volume of forgotten lore, 
+        While I nodded, nearly napping, suddenly there came a tapping, 
+        As of some one gently rapping, rapping at my chamber door.""".replace("\n", "")
+        HPL_test_string = """In this luminous Company I was tolerated more because of my Years 
+        than for my Wit or Learning; being no Match at all for the rest. My Friendship for the 
+        celebrated Monsieur Voltaire was ever a Cause of Annoyance to the Doctor; who was deeply 
+        orthodox, and who us'd to say of the French Philosopher.""".replace("\n", "")
+        MWS_test_string = """A few seconds ago they had all been active and healthy beings, 
+        so full of employment they could not afford to mend his calèche unless tempted by 
+        some extraordinary reward; now the men declared themselves cripples and invalids, the 
+        children were orphans, the women helpless widows, and they would all die of hunger if 
+        his Eccellenza did not bestow a few grani.""".replace("\n", "")
+        test_strings = [EAP_test_string, HPL_test_string, MWS_test_string]
+        cnn.predict(test_strings, vectorize=True)
 
 if __name__ == "__main__":
     main()
