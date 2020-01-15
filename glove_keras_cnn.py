@@ -24,6 +24,9 @@ epochs = 4
 num_classes = 3
 
 class GloveKerasCnn(Model):
+    def __init__(self):
+        self.embedding = None
+        self.model = None
     def preprocess(self):
         df = Model.preprocess(self)
         authors = list(df.author.unique())
@@ -39,14 +42,14 @@ class GloveKerasCnn(Model):
 
     def vectorize(self, dataset):
         print("vectorizing")
-        if not self.wv:
+        if not self.embedding:
             GLOVE_DIR = "/media/D/data/glove/"
             GLOVE_W2V_FILE = "glove.840B.300d.w2vformat.txt"
             GLOVE_W2V_PATH = os.path.join(GLOVE_DIR, GLOVE_W2V_FILE)
             glove_model = gensim.models.KeyedVectors.load_word2vec_format(GLOVE_W2V_PATH)
             # print("time taken loading glove: {}".format(time.time()-t))
-            self.wv = glove_model.wv
-        wv = self.wv
+            self.embedding = glove_model.wv
+        wv = self.embedding
         tokenizer = TreebankWordTokenizer()
         vectorized_data = []
         for sentence in dataset:
