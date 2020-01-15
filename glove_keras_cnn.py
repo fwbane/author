@@ -30,8 +30,7 @@ GLOVE_W2V_PATH = os.path.join(GLOVE_DIR, GLOVE_W2V_FILE)
 # BASE CLASS FOR KERAS CNN WITH GLOVE
 class GloveKerasCnn(Model):
     def __init__(self):
-        self.embedding = None
-        self.model = None
+        Model.__init__(self)
         self.mname = "glove_keras_cnn_model.json"
         self.wname = "glove_keras_cnn_weights.h5"
 
