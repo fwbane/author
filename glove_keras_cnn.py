@@ -307,9 +307,10 @@ def main():
 
     for i, sentence in enumerate(test_strings):
             print(sentence)
-            for cnn in cnns:
+            for n, cnn in enumerate(cnns):
                 print(cnn)
-                print(predictions[i])
+                print(predictions[n][i])
+                print(np.argmax(predictions[n][i]))
                 print()
 
 
