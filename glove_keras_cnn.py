@@ -5,15 +5,15 @@ from sklearn.model_selection import train_test_split
 import time
 import numpy as np
 from keras.models import Sequential
-from keras.layers import Dense, Activation, Conv1D, Dropout, GlobalMaxPooling1D
-from keras.optimizers import SGD
+from keras.layers import Dense, Activation, Conv1D, Dropout, GlobalMaxPooling1D, MaxPooling1D, GlobalAveragePooling1D
+from keras.optimizers import SGD, Adam
 import gensim
 from keras.models import model_from_json
 import pickle
 
 from model_template import Model
 
-load = False  # Eventually parse as command line argument
+load = True  # Eventually parse as command line argument
 maxlen = 100
 batch_size = 32
 embedding_dims = 300
@@ -173,6 +173,74 @@ class VanillaGloveKerasCnn(GloveKerasCnn):
         model.fit(X_train, Y_train, batch_size=batch_size, epochs=epochs, validation_data=(X_dev, Y_dev))
         return model
 
+class GloveKerasDoubleCnn(GloveKerasCnn):
+    def __init__(self, wv=None):
+        GloveKerasCnn.__init__(self)
+        if wv:
+            self.embedding = wv
+        self.mname = "double_cnn_model.json"
+        self.wname = "double_cnn_weights.h5"
+
+    def create(self):
+        double_filters_1 = 128
+        double_filters_2 = 256
+        double_kernel_size_1 = 5
+        double_kernel_size_2 = 3
+        double_hidden_dims_1 = 128
+
+        model = Sequential()
+        model.add(Conv1D(double_filters_1, double_kernel_size_1, padding='valid', activation='relu', input_shape=(maxlen, embedding_dims)))
+        model.add(MaxPooling1D(3))
+        model.add(Dropout(0.2))
+        model.add(Dense(double_hidden_dims_1))
+        model.add(Activation('relu'))
+        model.add(Conv1D(double_filters_2, double_kernel_size_2, activation='relu'))
+        model.add(GlobalMaxPooling1D())
+        model.add(Dropout(0.5))
+        model.add(Dense(num_classes))
+        model.add(Activation('sigmoid'))
+        self.model = model
+        return model
+
+    def train(self, model, X_train, Y_train, X_dev, Y_dev):
+        double_epochs = 10
+        adam = Adam(lr=0.0001, beta_1=0.9, beta_2=0.999, amsgrad=False)
+        model.compile(loss='categorical_crossentropy', optimizer=adam, metrics=['accuracy'])
+        model.fit(X_train, Y_train, batch_size=batch_size, epochs=double_epochs, validation_data=(X_dev, Y_dev))
+        return model
+
+class GloveKerasStackedCnn(GloveKerasCnn):
+    def __init__(self, wv=None):
+        GloveKerasCnn.__init__(self)
+        if wv:
+            self.embedding = wv
+        self.mname = "stacked_cnn_model.json"
+        self.wname = "stacked_cnn_weights.h5"
+
+    def create(self):
+        stacked_filters_1 = 64
+        stacked_filters_2 = 128
+        stacked_kernel_size_1 = 3
+        stacked_kernel_size_2 = 3
+        model = Sequential()
+        model.add(Conv1D(stacked_filters_1, stacked_kernel_size_1, padding='valid', activation='relu', input_shape=(maxlen, embedding_dims)))
+        model.add(Conv1D(stacked_filters_1, stacked_kernel_size_1, activation='relu'))
+        model.add(MaxPooling1D(5))
+        model.add(Conv1D(stacked_filters_2, stacked_kernel_size_2, activation='relu'))
+        model.add(Conv1D(stacked_filters_2, stacked_kernel_size_2, activation='relu'))
+        model.add(GlobalAveragePooling1D())
+        model.add(Dropout(0.5))
+        model.add(Dense(num_classes))
+        model.add(Activation('softmax'))
+        self.model = model
+        return model
+
+    def train(self, model, X_train, Y_train, X_dev, Y_dev):
+        stacked_epochs = 5
+        adam = Adam(lr=0.0001, beta_1=0.9, beta_2=0.999, amsgrad=False)
+        model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
+        model.fit(X_train, Y_train, batch_size=batch_size, epochs=stacked_epochs, validation_data=(X_dev, Y_dev))
+        return model
 
 def main():
     t = time.time()
@@ -193,22 +261,20 @@ def main():
         pickle.dump(X, open("X-glove-encoding", "wb"))
         pickle.dump(y, open("y-glove-encoding", "wb"))
 
-    X_train, X_dev, Y_train, Y_dev = train_test_split(X, y, test_size=0.2, random_state=707)
-    print("padding data", time.time() - t)
-    X_train = cnn.pad_trunc(X_train, maxlen)
-    X_dev = cnn.pad_trunc(X_dev, maxlen)
-    X_train = np.reshape(X_train, (len(X_train), maxlen, embedding_dims))
-    Y_train = np.reshape(Y_train, (len(Y_train), num_classes))
-    X_dev = np.reshape(X_dev, (len(X_dev), maxlen, embedding_dims))
-    Y_dev = np.reshape(Y_dev, (len(Y_dev), num_classes))
-    print(X_train.shape, Y_train.shape, X_dev.shape, Y_dev.shape)
-
-    if load:
-        model = cnn.load()
-    else:
-        print("creating model", time.time() - t)
+    cnns = [GloveKerasCnn(), GloveKerasStackedCnn(), GloveKerasDoubleCnn()]
+    randoms = np.random.randint(0, 9999, size=len(cnns))
+    for cnn, random_state in zip(cnns, randoms):
+        X_train, X_dev, Y_train, Y_dev = train_test_split(X, y, test_size=0.2, random_state=random_state)
+        X_train = cnn.pad_trunc(X_train, maxlen)
+        X_dev = cnn.pad_trunc(X_dev, maxlen)
+        X_train = np.reshape(X_train, (len(X_train), maxlen, embedding_dims))
+        Y_train = np.reshape(Y_train, (len(Y_train), num_classes))
+        X_dev = np.reshape(X_dev, (len(X_dev), maxlen, embedding_dims))
+        Y_dev = np.reshape(Y_dev, (len(Y_dev), num_classes))
+        # if load:
+        #     model = cnn.load()
+        # else:
         model = cnn.create()
-        print("training model", time.time() - t)
         model = cnn.train(model, X_train, Y_train, X_dev, Y_dev)
         cnn.save(model, save_weights=True)
 
@@ -229,15 +295,23 @@ def main():
 
     if load:
         vectorized_query = pickle.load(open("glove_vectorized_test_sentences", "rb"))
-        predictions = cnn.predict(vectorized_query, vectorize=False)
+        predictions = []
+        for cnn in cnns:
+            predictions.append(cnn.predict(vectorized_query, vectorize=False))
+
+
     else:
-        predictions = cnn.predict(test_strings, vectorize=True)
+        predictions = []
+        for cnn in cnns:
+            predictions.append(cnn.predict(test_strings, vectorize=True))
 
     for i, sentence in enumerate(test_strings):
-        print(sentence)
-        print(predictions[i])
-        print(np.argmax(predictions[i]))
-        print("")
+            print(sentence)
+            for cnn in cnns:
+                print(cnn)
+                print(predictions[i])
+                print()
+
 
 if __name__ == "__main__":
     main()
