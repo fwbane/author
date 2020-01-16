@@ -122,11 +122,8 @@ class GloveKerasCnn(Model):
         vectorized_query = np.asarray(vectorized_query)
         vectorized_query = np.reshape(vectorized_query, (len(query), maxlen, embedding_dims)) # Should be redundant, to ensure compliance
         predictions = self.model.predict(vectorized_query)
-        for n, sentence in enumerate(query):
-            print(sentence)
-            print(predictions[n])
-            print(np.argmax(predictions[n]))
-            print("")
+        return predictions
+
 
     def pad_trunc(self, data, maxlen):
         new_data = []
@@ -152,6 +149,7 @@ class GloveKerasCnn(Model):
 
 class VanillaGloveKerasCnn(GloveKerasCnn):
     def __init__(self, wv=None):
+        GloveKerasCnn.__init__(self)
         if wv:
             self.embedding = wv
         self.mname = "vanilla_cnn_model.json"
@@ -214,25 +212,32 @@ def main():
         model = cnn.train(model, X_train, Y_train, X_dev, Y_dev)
         cnn.save(model, save_weights=True)
 
+    EAP_test_string = """Once upon a midnight dreary, while I pondered, weak and weary, 
+    Over many a quaint and curious volume of forgotten lore, 
+    While I nodded, nearly napping, suddenly there came a tapping, 
+    As of some one gently rapping, rapping at my chamber door.""".replace("\n", "")
+    HPL_test_string = """In this luminous Company I was tolerated more because of my Years 
+    than for my Wit or Learning; being no Match at all for the rest. My Friendship for the 
+    celebrated Monsieur Voltaire was ever a Cause of Annoyance to the Doctor; who was deeply 
+    orthodox, and who us'd to say of the French Philosopher.""".replace("\n", "")
+    MWS_test_string = """A few seconds ago they had all been active and healthy beings, 
+    so full of employment they could not afford to mend his calèche unless tempted by 
+    some extraordinary reward; now the men declared themselves cripples and invalids, the 
+    children were orphans, the women helpless widows, and they would all die of hunger if 
+    his Eccellenza did not bestow a few grani.""".replace("\n", "")
+    test_strings = [EAP_test_string, HPL_test_string, MWS_test_string]
+
     if load:
         vectorized_query = pickle.load(open("glove_vectorized_test_sentences", "rb"))
-        cnn.predict(vectorized_query, vectorize=False)
+        predictions = cnn.predict(vectorized_query, vectorize=False)
     else:
-        EAP_test_string = """Once upon a midnight dreary, while I pondered, weak and weary, 
-        Over many a quaint and curious volume of forgotten lore, 
-        While I nodded, nearly napping, suddenly there came a tapping, 
-        As of some one gently rapping, rapping at my chamber door.""".replace("\n", "")
-        HPL_test_string = """In this luminous Company I was tolerated more because of my Years 
-        than for my Wit or Learning; being no Match at all for the rest. My Friendship for the 
-        celebrated Monsieur Voltaire was ever a Cause of Annoyance to the Doctor; who was deeply 
-        orthodox, and who us'd to say of the French Philosopher.""".replace("\n", "")
-        MWS_test_string = """A few seconds ago they had all been active and healthy beings, 
-        so full of employment they could not afford to mend his calèche unless tempted by 
-        some extraordinary reward; now the men declared themselves cripples and invalids, the 
-        children were orphans, the women helpless widows, and they would all die of hunger if 
-        his Eccellenza did not bestow a few grani.""".replace("\n", "")
-        test_strings = [EAP_test_string, HPL_test_string, MWS_test_string]
-        cnn.predict(test_strings, vectorize=True)
+        predictions = cnn.predict(test_strings, vectorize=True)
+
+    for i, sentence in enumerate(test_strings):
+        print(sentence)
+        print(predictions[i])
+        print(np.argmax(predictions[i]))
+        print("")
 
 if __name__ == "__main__":
     main()
