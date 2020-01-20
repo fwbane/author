@@ -233,7 +233,7 @@ class GloveKerasStackedCnn(GloveKerasCnn):
         model.add(GlobalAveragePooling1D())
         model.add(Dropout(0.5))
         model.add(Dense(num_classes))
-        model.add(Activation('softmax'))
+        model.add(Activation('sigmoid'))
         self.model = model
         return model
 
