@@ -85,7 +85,7 @@ class GloveKerasCnn(Model):
         return model
 
     def train(self, model, X_train, Y_train, X_dev, Y_dev):
-        adam = Adam(lr=0.0001, beta_1=0.9, beta_2=0.999, clipnorm=1.)
+        adam = Adam(lr=0.0001, beta_1=0.9, beta_2=0.999, clipnorm=1., clipvalue=0.5)
         model.compile(loss='categorical_crossentropy', optimizer=adam, metrics=['accuracy'])
         model.fit(X_train, Y_train, batch_size=batch_size, epochs=epochs, validation_data=(X_dev, Y_dev))
         return model
@@ -170,7 +170,7 @@ class VanillaGloveKerasCnn(GloveKerasCnn):
         return model
 
     def train(self, model, X_train, Y_train, X_dev, Y_dev):
-        adam = Adam(lr=0.001, beta_1=0.9, beta_2=0.999, clipnorm=1.)
+        adam = Adam(lr=0.001, beta_1=0.9, beta_2=0.999, clipnorm=1., clipvalue=0.5)
         model.compile(loss='categorical_crossentropy', optimizer=adam, metrics=['accuracy'])
         model.fit(X_train, Y_train, batch_size=batch_size, epochs=epochs, validation_data=(X_dev, Y_dev))
         return model
@@ -206,7 +206,7 @@ class GloveKerasDoubleCnn(GloveKerasCnn):
 
     def train(self, model, X_train, Y_train, X_dev, Y_dev):
         double_epochs = 30
-        adam = Adam(lr=0.0001, beta_1=0.9, beta_2=0.999, clipnorm=1.)
+        adam = Adam(lr=0.0001, beta_1=0.9, beta_2=0.999, clipnorm=1., clipvalue=0.5)
         model.compile(loss='categorical_crossentropy', optimizer=adam, metrics=['accuracy'])
         model.fit(X_train, Y_train, batch_size=batch_size, epochs=double_epochs, validation_data=(X_dev, Y_dev))
         return model
@@ -239,7 +239,7 @@ class GloveKerasStackedCnn(GloveKerasCnn):
 
     def train(self, model, X_train, Y_train, X_dev, Y_dev):
         stacked_epochs = 30
-        adam = Adam(lr=0.0001, beta_1=0.9, beta_2=0.999, clipnorm=1.)
+        adam = Adam(lr=0.0001, beta_1=0.9, beta_2=0.999, clipnorm=1., clipvalue=0.5)
         model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
         model.fit(X_train, Y_train, batch_size=batch_size, epochs=stacked_epochs, validation_data=(X_dev, Y_dev))
         return model
