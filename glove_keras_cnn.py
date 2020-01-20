@@ -20,7 +20,7 @@ embedding_dims = 300
 filters = 250
 kernel_size = 3
 hidden_dims = 250
-epochs = 4
+epochs = 30
 num_classes = 3
 
 GLOVE_DIR = "/media/D/data/glove/"
@@ -85,7 +85,8 @@ class GloveKerasCnn(Model):
         return model
 
     def train(self, model, X_train, Y_train, X_dev, Y_dev):
-        model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
+        adam = Adam(lr=0.0001, beta_1=0.9, beta_2=0.999, clipnorm=1.)
+        model.compile(loss='categorical_crossentropy', optimizer=adam, metrics=['accuracy'])
         model.fit(X_train, Y_train, batch_size=batch_size, epochs=epochs, validation_data=(X_dev, Y_dev))
         return model
 
@@ -169,7 +170,8 @@ class VanillaGloveKerasCnn(GloveKerasCnn):
         return model
 
     def train(self, model, X_train, Y_train, X_dev, Y_dev):
-        model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
+        adam = Adam(lr=0.001, beta_1=0.9, beta_2=0.999, clipnorm=1.)
+        model.compile(loss='categorical_crossentropy', optimizer=adam, metrics=['accuracy'])
         model.fit(X_train, Y_train, batch_size=batch_size, epochs=epochs, validation_data=(X_dev, Y_dev))
         return model
 
@@ -203,8 +205,8 @@ class GloveKerasDoubleCnn(GloveKerasCnn):
         return model
 
     def train(self, model, X_train, Y_train, X_dev, Y_dev):
-        double_epochs = 10
-        adam = Adam(lr=0.001, beta_1=0.9, beta_2=0.999, clipnorm=1.)
+        double_epochs = 30
+        adam = Adam(lr=0.0001, beta_1=0.9, beta_2=0.999, clipnorm=1.)
         model.compile(loss='categorical_crossentropy', optimizer=adam, metrics=['accuracy'])
         model.fit(X_train, Y_train, batch_size=batch_size, epochs=double_epochs, validation_data=(X_dev, Y_dev))
         return model
@@ -236,7 +238,7 @@ class GloveKerasStackedCnn(GloveKerasCnn):
         return model
 
     def train(self, model, X_train, Y_train, X_dev, Y_dev):
-        stacked_epochs = 5
+        stacked_epochs = 30
         adam = Adam(lr=0.0001, beta_1=0.9, beta_2=0.999, clipnorm=1.)
         model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
         model.fit(X_train, Y_train, batch_size=batch_size, epochs=stacked_epochs, validation_data=(X_dev, Y_dev))
@@ -264,6 +266,7 @@ def main():
     cnns = [GloveKerasCnn(), GloveKerasStackedCnn(), GloveKerasDoubleCnn()]
     randoms = np.random.randint(0, 9999, size=len(cnns))
     for cnn, random_state in zip(cnns, randoms):
+        print("Now training model: {}".format(cnn))
         X_train, X_dev, Y_train, Y_dev = train_test_split(X, y, test_size=0.2, random_state=random_state)
         X_train = cnn.pad_trunc(X_train, maxlen)
         X_dev = cnn.pad_trunc(X_dev, maxlen)
@@ -310,7 +313,7 @@ def main():
             for n, cnn in enumerate(cnns):
                 print(cnn)
                 print(predictions[n][i])
-                print(np.argmax(predictions[n][i]))
+                print(np.argmax(predictions[n][i]), i, i == np.argmax(predictions[n][i]))
                 print()
 
 

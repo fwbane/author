@@ -1,14 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="cbad7b05-89cc-4f47-b850-8ad83553770f" name="Default Changelist" comment="adding predict method to test">
-      <change afterPath="$PROJECT_DIR$/.idea/deployment.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/other.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/author.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/author.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+    <list default="true" id="cbad7b05-89cc-4f47-b850-8ad83553770f" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/feature_engineering_notebook.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/feature_engineering_notebook.ipynb" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/glove_keras_cnn.py" beforeDir="false" afterPath="$PROJECT_DIR$/glove_keras_cnn.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -124,7 +118,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1577662091600</updated>
-      <workItem from="1579361666110" duration="7428000" />
+      <workItem from="1579361666110" duration="8560000" />
     </task>
     <task id="LOCAL-00001" summary="Adding model template and glove keras cnn model">
       <created>1578615424299</created>
@@ -294,7 +288,14 @@
       <option name="project" value="LOCAL" />
       <updated>1579210646914</updated>
     </task>
-    <option name="localTasksCounter" value="25" />
+    <task id="LOCAL-00025" summary="adding gradient norm clipping">
+      <created>1579559394937</created>
+      <option name="number" value="00025" />
+      <option name="presentableId" value="LOCAL-00025" />
+      <option name="project" value="LOCAL" />
+      <updated>1579559394937</updated>
+    </task>
+    <option name="localTasksCounter" value="26" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -328,7 +329,8 @@
     <MESSAGE value="refactoring" />
     <MESSAGE value="adding loop through models" />
     <MESSAGE value="notebook commit" />
-    <option name="LAST_COMMIT_MESSAGE" value="notebook commit" />
+    <MESSAGE value="adding gradient norm clipping" />
+    <option name="LAST_COMMIT_MESSAGE" value="adding gradient norm clipping" />
   </component>
   <component name="WindowStateProjectService">
     <state x="552" y="179" key="#Deployment" timestamp="1579370343826">
@@ -339,6 +341,10 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="414" y="176" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1920.1040/-2048.0.2048.1112@0.0.1920.1040" timestamp="1579378769172" />
+    <state x="585" y="115" key="CommitChangelistDialog2" timestamp="1579559393962">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="585" y="115" key="CommitChangelistDialog2/0.0.1920.1040/-2048.0.2048.1112@0.0.1920.1040" timestamp="1579559393962" />
     <state x="740" y="276" key="FileChooserDialogImpl" timestamp="1579370803347">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
@@ -347,6 +353,10 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="461" y="163" key="SettingsEditor/0.0.1920.1040/-2048.0.2048.1112@0.0.1920.1040" timestamp="1579378819293" />
+    <state x="552" y="254" key="Vcs.Push.Dialog.v2" timestamp="1579559456485">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="552" y="254" key="Vcs.Push.Dialog.v2/0.0.1920.1040/-2048.0.2048.1112@0.0.1920.1040" timestamp="1579559456485" />
     <state x="822" y="420" key="WebDeployment.AddServerDialog.v.1" timestamp="1579361986889">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
