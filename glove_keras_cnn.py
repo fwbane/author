@@ -204,7 +204,7 @@ class GloveKerasDoubleCnn(GloveKerasCnn):
 
     def train(self, model, X_train, Y_train, X_dev, Y_dev):
         double_epochs = 10
-        adam = Adam(lr=0.0001, beta_1=0.9, beta_2=0.999, amsgrad=False)
+        adam = Adam(lr=0.001, beta_1=0.9, beta_2=0.999, clipnorm=1.)
         model.compile(loss='categorical_crossentropy', optimizer=adam, metrics=['accuracy'])
         model.fit(X_train, Y_train, batch_size=batch_size, epochs=double_epochs, validation_data=(X_dev, Y_dev))
         return model
@@ -237,7 +237,7 @@ class GloveKerasStackedCnn(GloveKerasCnn):
 
     def train(self, model, X_train, Y_train, X_dev, Y_dev):
         stacked_epochs = 5
-        adam = Adam(lr=0.0001, beta_1=0.9, beta_2=0.999, amsgrad=False)
+        adam = Adam(lr=0.0001, beta_1=0.9, beta_2=0.999, clipnorm=1.)
         model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
         model.fit(X_train, Y_train, batch_size=batch_size, epochs=stacked_epochs, validation_data=(X_dev, Y_dev))
         return model
