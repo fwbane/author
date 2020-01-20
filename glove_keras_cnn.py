@@ -20,7 +20,7 @@ embedding_dims = 300
 filters = 250
 kernel_size = 3
 hidden_dims = 250
-epochs = 7
+epochs = 11
 num_classes = 3
 
 GLOVE_DIR = "/media/D/data/glove/"

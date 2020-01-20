@@ -118,7 +118,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1577662091600</updated>
-      <workItem from="1579361666110" duration="10025000" />
+      <workItem from="1579361666110" duration="10147000" />
     </task>
     <task id="LOCAL-00001" summary="Adding model template and glove keras cnn model">
       <created>1578615424299</created>
@@ -316,7 +316,14 @@
       <option name="project" value="LOCAL" />
       <updated>1579563416698</updated>
     </task>
-    <option name="localTasksCounter" value="29" />
+    <task id="LOCAL-00029" summary="Tuning parameters">
+      <created>1579563998721</created>
+      <option name="number" value="00029" />
+      <option name="presentableId" value="LOCAL-00029" />
+      <option name="project" value="LOCAL" />
+      <updated>1579563998721</updated>
+    </task>
+    <option name="localTasksCounter" value="30" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -363,10 +370,10 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="414" y="176" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1920.1040/-2048.0.2048.1112@0.0.1920.1040" timestamp="1579378769172" />
-    <state x="585" y="115" key="CommitChangelistDialog2" timestamp="1579563997712">
+    <state x="585" y="115" key="CommitChangelistDialog2" timestamp="1579564122737">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="585" y="115" key="CommitChangelistDialog2/0.0.1920.1040/-2048.0.2048.1112@0.0.1920.1040" timestamp="1579563997712" />
+    <state x="585" y="115" key="CommitChangelistDialog2/0.0.1920.1040/-2048.0.2048.1112@0.0.1920.1040" timestamp="1579564122737" />
     <state x="740" y="276" key="FileChooserDialogImpl" timestamp="1579370803347">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
@@ -375,10 +382,10 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="461" y="163" key="SettingsEditor/0.0.1920.1040/-2048.0.2048.1112@0.0.1920.1040" timestamp="1579378819293" />
-    <state x="552" y="254" key="Vcs.Push.Dialog.v2" timestamp="1579563420347">
+    <state x="552" y="254" key="Vcs.Push.Dialog.v2" timestamp="1579564000936">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="552" y="254" key="Vcs.Push.Dialog.v2/0.0.1920.1040/-2048.0.2048.1112@0.0.1920.1040" timestamp="1579563420347" />
+    <state x="552" y="254" key="Vcs.Push.Dialog.v2/0.0.1920.1040/-2048.0.2048.1112@0.0.1920.1040" timestamp="1579564000936" />
     <state x="822" y="420" key="WebDeployment.AddServerDialog.v.1" timestamp="1579361986889">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
